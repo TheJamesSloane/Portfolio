@@ -1,0 +1,62 @@
+{% extends "auctions/layout.html" %}
+
+<!-- Load humanize for currency displays -->
+{% load humanize %}
+
+{% block body %}
+    <h2>Watchlist</h2>
+    <br>
+
+    <!-- Present the current watchlisted listings -->
+    <div style="width: 100%;">
+        <table style="width: 100%;">
+            <thead>
+                <tr>
+                    <th style="width: 10%; text-align: center;">Title</th>
+                    <th style="width: 50%; text-align: center;">Description</th>
+                    <th style="width: 10%; text-align: center;">Category</th>
+                    <th style="width: 10%; text-align: center;">Starting Bid</th>
+                    <th style="width: 10%; text-align: center;">Image</th>
+                    <th style="width: 10%; text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {% if listings|length == 0 %}
+                    <tr>
+                        <td colspan="6" style="text-align: center;">You have no items in your watchlist.</td>
+                    </tr>
+                {% endif %}
+
+                {% for listing in listings %}
+                    {% if listing.is_active %}
+                    <tr>
+                        <td style="text-align: center;">{{ listing.title }}</td>
+                        <td style="text-align: center;">{{ listing.description }}</td>
+                        <td style="text-align: center;">
+                            {% if listing.category %}
+                                {{ listing.category }}
+                            {% else %}
+                                Category unavailable
+                            {% endif %}
+                        </td>
+                        <td style="text-align: center;">₲{{ listing.starting_bid|intcomma }}</td>
+                        <td style="text-align: center;">
+                            {% if listing.image %}
+                                <img src="{{ listing.image.url }}" alt="Image" height="100" width="100">
+                            {% else %}
+                                Image unavailable
+                            {% endif %}
+                        </td>
+                        <td style="text-align: center;">
+                            <a href="{% url 'auction:view_listing' listing.id %}">View Listing</a>
+                        </td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

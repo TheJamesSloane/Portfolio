@@ -1,0 +1,155 @@
+{% extends "auctions/layout.html" %}
+
+<!-- Load humanize for currency displays -->
+{% load humanize %}
+
+{% block body %}
+    <h2>Listing</h2>
+    {% if is_owner %}
+        by you
+        <br><br>
+        <!-- Do not show the watchlist button if the user is the owner -->
+        <div style="display: flex; gap: 10px;">
+            <button disabled>Watchlist</button>
+            <form method="POST">
+                {% csrf_token %}
+                {% if not listing.highest_bid %}
+                    <button type="submit" name="delist-item">Delist Item</button>
+                {% else %}
+                    <button type="submit" name="sell-item">Sell Item</button>
+                {% endif %}
+            </form>
+        </div>
+    {% else %}
+        by {{ listing.owner }}
+        <br><br>
+        <!-- If the user is not the owner, show the buttons -->
+        <div style="display: flex; gap: 10px;">
+            {% if watchlisted %}
+                <!-- If already watchlisted, allow to remove from the watchlist -->
+                <form method="POST">
+                    {% csrf_token %}
+                    <button type="submit" name="watchlist">Watchlisted</button>
+                </form>
+            {% else %}
+                <!-- If not watchlisted, allow to add to the watchlist -->
+                <form method="POST">
+                    {% csrf_token %}
+                    <button type="submit" name="watchlist">Watchlist</button>
+                </form>
+            {% endif %}
+        </div>
+    {% endif %}
+
+<br><br>
+
+
+    <div style="width: 100%;">
+        <table style="width: 100%;">
+            <thead>
+                <tr>
+                    <th style="width: 10%; text-align: center;">Title</th>
+                    <th style="width: 40%; text-align: center;">Description</th>
+                    <th style="width: 10%; text-align: center;">Category</th>
+                    <th style="width: 10%; text-align: center;">Starting Bid</th>
+                    <th style="width: 10%; text-align: center;">Highest Bid</th>
+                    <th style="width: 10%; text-align: center;">Image</th>
+                    <th style="width: 10%; text-align: center;">Your Bid (₲)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="width: 10%; text-align: center;">{{ listing.title }}</td>
+                    <td style="width: 40%; text-align: center;">{{ listing.description }}</td>
+                    <td style="width: 10%; text-align: center;">
+                        {% if listing.category %}
+                            {{ listing.category }}
+                        {% else %}
+                            Category unavailable
+                        {% endif %}
+                    </td>
+                    <td style="width: 10%; text-align: center;">₲{{ listing.starting_bid|intcomma }}</td>
+                    <td style="width: 10%; text-align: center;">
+                        <!-- If there are no bids yet -->
+                        {% if not listing.highest_bid %}
+                            No bids yet
+                        <!-- If there is a bid -->
+                        {% elif listing.highest_bid %}
+                            ₲{{ listing.highest_bid|intcomma }}
+                            <br>
+                            <!-- If the user is the highest bidder -->
+                            {% if listing.highest_bidder == request.user %}
+                                by you
+                            {% elif listing.owner == request.user %}
+                            <!-- If the user is the seller -->
+                                by {{ highest_bidder.username }}
+                            {% else %}
+                                by another user
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td style="width: 10%; text-align: center;">
+                        {% if listing.image %}
+                            <img src="{{ listing.image.url }}" alt="Image" height="100" width="100">
+                        {% else %}
+                            Image unavailable
+                        {% endif %}
+                    </td>
+                    <td style="width: 10%; text-align: center;">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="number" name="bid" style="text-align: center;"
+                                {% if listing.highest_bid %}
+                                    min="{{ min_bid }}"
+                                    value="{{ min_bid }}"
+                                {% else %}
+                                    min="{{ listing.starting_bid }}"
+                                    value="{{ listing.starting_bid }}"
+                                {% endif %}
+                            required>
+                            <br><br>
+                            {% if is_owner %}
+                                <!-- Don't show the submit button if the user is the owner -->
+                                <button disabled>Submit</button>
+                            {% else %}
+                                <button type="submit" style="width: 50%;">Submit</button>
+                            {% endif %}
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <br>
+    <h3>Comments:</h3>
+    {% for comment in comments %}
+        <strong>
+            {% if comment.user %}
+                {{ comment.user.username }}
+            {% else %}
+                Anonymous
+            {% endif %}
+            said:
+        </strong>
+    <p>{{ comment.text }}</p>
+    <small>{{ comment.created_at }}</small>
+    {% empty %}
+        <p>No comments yet.</p>
+    {% endfor %}
+    
+
+    <!-- Add a comment form -->
+    {% if user.is_authenticated %}
+        <br>
+        <form method="POST">
+            {% csrf_token %}
+            <textarea name="comment" placeholder="Add your comment here..." required style="width: 20%;"></textarea>
+            <br><br>
+            <button type="submit">Submit Comment</button>
+        </form>
+    {% else %}
+        <p>You must be logged in to comment.</p>
+    {% endif %}
+
+{% endblock %}
