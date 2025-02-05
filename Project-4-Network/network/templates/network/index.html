@@ -1,0 +1,130 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+
+    <!-- Default view as soon as the user logs in -->
+    <div id="network-view" class="page-contents" style="display: block;">
+        <h1>Welcome to Network!</h1>
+        <h3>Click a link to get started</h3>
+    </div>
+
+
+    <!-- View when the user clicks their name; it should indicate their posts, the number of their followers, and the number of those they're following -->
+    <div id="profile-view" class="page-contents" style="display: none;">
+        <h1>Profile: <span id="profile-username"></span></h1>
+        <div class="box">
+            <div class="followers-following-box">
+                <p class="titles">Followers: <span id="profile-followers-count"></span></p>
+                <p class="titles">Following: <span id="profile-following-count"></span></p>
+            </div>
+        </div>
+        <br>
+
+        <!-- Present the posts of the current user -->
+        <h1>Posts</h1>
+        <div class="profile-posts-container">
+        </div>
+        <div class="previous-next-button-box">
+            <button id="profile-load-previous-ten" style="display: none;">Load Previous</button>
+            <button id="profile-load-next-ten" data-posts-loaded="10" style="display: none;">Load Next</button>
+        </div>
+        <br>
+    </div>
+
+
+    <!-- Display posts in reverse chronological order, a maximum of ten at a time, as well as buttons for navigating forwards or backwards -->
+    <div id="all-posts-view" class="page-contents" style="display: none;">
+        <h1>All Posts</h1>
+        <div class="posts-container">
+        </div>
+        <div class="previous-next-button-box">
+            <button id="load-previous-ten" style="display: none;">Load Previous</button>
+            <button id="load-next-ten" style="display: none;" data-posts-loaded="10">Load Next</button>
+        </div>
+        <br>
+    </div>
+
+
+    <!-- Present the user with an opportunity to write a new post -->
+    <div id="new-post-view" class="page-contents" style="display: none;">
+        <h1>New Post</h1>
+        <div class="box">
+            <div id="new-post-box">
+                <form method="POST" action="{% url 'posts:new_post' %}">
+                    {% csrf_token %}
+                    <textarea class="new-post-control" id="new-post-body" name="text" placeholder="What's on your mind?"></textarea>
+                    <input type="submit" class="new-post-submit" value="Post" id="submit-post" />
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Present the user with an opportunity to edit an existing post that belongs to them -->
+    <div id="edit-post-view" class="page-contents" style="display: none;">
+        <h1>Edit Post</h1>
+        <div class="box">
+            <div id="edit-post-box">
+                <textarea class="edit-post-control" id="edit-post-body" name="text" placeholder="What's on your mind?"></textarea>
+                <div id="edit-submit-button-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Present the posts from those the user is following -->
+    <div id="following-view" class="page-contents" style="display: none;">
+        <h1>Following</h1>
+        <div class="follow-posts-container">
+        </div>
+        <div class="previous-next-button-box">
+            <button id="follow-load-previous-ten" style="display: none;">Load Previous</button>
+            <button id="follow-load-next-ten" style="display: none;" data-posts-loaded="10">Load Next</button>
+        </div>
+        <br>
+    </div>
+
+
+    <!-- Present a div for when the user clicks another member's profile -->
+    <div id="member-profile-view" class="page-contents" style="display: none;">
+        <h1>Profile: <span id="member-username"></span></h1>
+        <div class="box">
+            <div class="followers-following-box">
+                <p class="titles">Followers: <span id="member-followers-count"></span></p>
+                <p class="titles">Following: <span id="member-following-count"></span></p>
+            </div>
+        </div>
+        <div id="member-follow-unfollow-button"></div>
+        <br>
+
+        <!-- Present the posts of the specific member -->
+        <h1>Posts</h1>
+        <div class="member-posts-container">    
+        </div>
+        <div class="previous-next-button-box">
+            <button id="member-load-previous-ten" style="display: none;">Load Previous</button>
+            <button id="member-load-next-ten" data-posts-loaded="10" style="display: none;">Load Next</button>
+        </div>
+    </div>
+    
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/posts.js' %}"></script>
+    {{ member_data|json_script:"member-data" }}
+    <script>
+        const member_data = JSON.parse(document.getElementById('member-data').textContent);
+    </script>
+    <script>
+        // Inject the user's ID into the JavaScript code
+        const currentUserId = "{{ request.user.id }}";
+        // Note that the next line returns user IDs
+        const followingUsers = "{{ following_users }}";
+        // Inject all follower data
+        const follow_data = "{{ follow_data }}";
+    </script>
+{% endblock %}

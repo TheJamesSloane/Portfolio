@@ -1,0 +1,126 @@
+.page-contents {
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+.titles {
+    font-weight: bold;
+}
+
+.box {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    margin-bottom: 15px;
+}
+
+#new-post-body {
+    width: 100%;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.new-post-control {
+    width: 100%;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+#new-post-comment {
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.post-box {
+    padding: 15px;
+}
+
+#new-post-box {
+    padding: 15px;
+}
+
+#edit-post-box {
+    padding: 15px;
+}
+
+#edit-post-body {
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.followers-following-box {
+    padding: 15px;
+}
+
+.like-unlike-button {
+    color: black;
+    background-color: rgb(255, 255, 255);
+    border: black solid 1px;
+    cursor: pointer;
+    padding: 3px;
+    margin-bottom: 3px;
+    border-radius: 3px;
+}
+
+.like-unlike-button.liked {
+    color: teal;
+    background-color: rgb(240, 255, 255);
+    border: teal solid 1px;
+}
+
+.like-unlike-button:hover {
+    background-color: rgb(255, 240, 200);
+    border: goldenrod solid 1px;
+}
+
+.new-post-submit {
+    background-color: white;
+    color: black;
+    border: black solid 1px;
+    cursor: pointer;
+    padding: 3px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+}
+
+.edit-post-submit, .edit-post-button, .comment-submit-button, #profile-load-previous-ten, #profile-load-next-ten, #load-previous-ten, #load-next-ten, #follow-load-previous-ten, #follow-load-next-ten, .new-post-submit, .follow-unfollow-button, #member-load-previous-ten, #member-load-next-ten {
+    color: black;
+    background-color: rgb(245, 245, 245);
+    border: black solid 1px;
+    cursor: pointer;
+    padding: 3px;
+    margin-bottom: 5px;
+    border-radius: 3px;
+}
+
+.edit-post-submit:hover, .edit-post-button:hover, .comment-submit-button:hover, #profile-load-previous-ten:hover, #profile-load-next-ten:hover, #load-previous-ten:hover, #load-next-ten:hover, #follow-load-previous-ten:hover, #follow-load-next-ten:hover, .new-post-submit:hover, .follow-unfollow-button:hover, #member-load-previous-ten:hover, #member-load-next-ten:hover {
+    background-color: rgb(240, 240, 240);
+    border: slategrey solid 1px;
+}
+
+.previous-next-button-box {
+    display: flex;
+    gap: 3px;
+}
+
+.comments {
+    background-color: #f5f5f5;
+    padding: 15px;
+    border-top: 1px solid #ccc;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+#community {
+    background-color: #f5f5f5;
+    padding: 15px;
+    border-top: 1px solid #ccc;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
