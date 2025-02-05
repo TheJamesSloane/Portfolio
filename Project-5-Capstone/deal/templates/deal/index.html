@@ -1,0 +1,383 @@
+{% extends "deal/layout.html" %}
+{% load static %}
+{% load humanize %}
+{% block body %}
+
+
+<div id="body-main-menu" style="display: block;">
+
+    <audio id="music-main-menu" loop>
+        <source src="{% static 'deal/music/main-theme.mp3' %}" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <div id="toggle-music-main-menu" style="cursor: pointer; position: relative; top: 1.5%; left: 3%; display: inline-flex; align-items: center;">
+        <img src="{% static 'deal/images/speaker.png' %}" alt="Speaker" style=" width: 30px;">
+        <span style="margin-left: 10px; font-size: 14px;">AUDIO</span>
+    </div>
+    
+    <!-- The initial view with only the logo and a "start" button -->
+    <div id="view-start" style="display: block;">
+        <button id="view-main-menu-button" class="primary-button">START</button>
+    </div>
+
+    <!-- The user may click "PLAY" to launch a game or "SCORES" to view scores -->
+    <div id="view-main-menu" style="display: none;">
+        
+        <!-- PLAY button -->
+        <button id="play-button" type="submit" class="primary-button">PLAY</button>
+        
+        <!-- SCORES button -->
+        <button id="view-scores-button" type="submit" class="primary-button">HIGH SCORES</button>
+    </div>
+
+    <!-- Display high scores when the user clicks "SCORES" -->
+    <div id="scores-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>HIGH SCORES</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Winnings</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="score-table-body">
+                    {% if scores %}
+                    {% for score in scores|slice:":10" %}
+                    <tr>
+                        <td>{{ score.username }}</td>
+                        <td>${{ score.winnings|intcomma }}</td>
+                        <td>{{ score.date|date:"j F Y" }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="3" style="text-align: center;">No high scores available</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            <div class="modal-actions">
+                <button id="close-scores" class="btn">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="body-deal" style="display: none">
+
+    <audio id="music-play" loop>
+        <source src="{% static 'deal/music/choose-your-case.mp3' %}" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <div id="toggle-music-play" style="cursor: pointer; position: relative; top: 1.5%; left: 3%; display: inline-flex; align-items: center;">
+        <img src="{% static 'deal/images/speaker.png' %}" alt="Speaker" style=" width: 30px;">
+        <span style="margin-left: 10px; font-size: 14px;">AUDIO</span>
+    </div>    
+    <img src="static/deal/images/logo.png" id="logo" alt="Deal or No Deal Logo">
+
+    <div id="dollar-values-container">
+        <div id="left-column">
+          <table>
+            <tr><td class="dollar-cell" data-amount="0.01">$0.01</td></tr>
+            <tr><td class="dollar-cell" data-amount="1">$1</td></tr>
+            <tr><td class="dollar-cell" data-amount="5">$5</td></tr>
+            <tr><td class="dollar-cell" data-amount="10">$10</td></tr>
+            <tr><td class="dollar-cell" data-amount="25">$25</td></tr>
+            <tr><td class="dollar-cell" data-amount="50">$50</td></tr>
+            <tr><td class="dollar-cell" data-amount="75">$75</td></tr>
+            <tr><td class="dollar-cell" data-amount="100">$100</td></tr>
+            <tr><td class="dollar-cell" data-amount="200">$200</td></tr>
+            <tr><td class="dollar-cell" data-amount="300">$300</td></tr>
+            <tr><td class="dollar-cell" data-amount="400">$400</td></tr>
+            <tr><td class="dollar-cell" data-amount="500">$500</td></tr>
+            <tr><td class="dollar-cell" data-amount="750">$750</td></tr>
+          </table>
+        </div>
+        <div id="right-column">
+          <table>
+            <tr><td class="dollar-cell" data-amount="1000">$1,000</td></tr>
+            <tr><td class="dollar-cell" data-amount="5000">$5,000</td></tr>
+            <tr><td class="dollar-cell" data-amount="10000">$10,000</td></tr>
+            <tr><td class="dollar-cell" data-amount="25000">$25,000</td></tr>
+            <tr><td class="dollar-cell" data-amount="50000">$50,000</td></tr>
+            <tr><td class="dollar-cell" data-amount="75000">$75,000</td></tr>
+            <tr><td class="dollar-cell" data-amount="100000">$100,000</td></tr>
+            <tr><td class="dollar-cell" data-amount="200000">$200,000</td></tr>
+            <tr><td class="dollar-cell" data-amount="300000">$300,000</td></tr>
+            <tr><td class="dollar-cell" data-amount="400000">$400,000</td></tr>
+            <tr><td class="dollar-cell" data-amount="500000">$500,000</td></tr>
+            <tr><td class="dollar-cell" data-amount="750000">$750,000</td></tr>
+            <tr><td class="dollar-cell" data-amount="1000000">$1,000,000</td></tr>
+          </table>
+        </div>
+      </div>
+    
+    <div id="select-your-briefcase" class="instructions">
+        SELECT YOUR BRIEFCASE
+    </div>
+
+    <div id="select-one-briefcase" class="instructions" style="display: none;">
+        SELECT 1 BRIEFCASE TO OPEN
+    </div>
+
+    <div id="select-a-briefcase" class="instructions" style="display: none;">
+        SELECT <span id="number-to-open"></span> BRIEFCASES TO OPEN
+    </div>
+
+    <div id="select-final-briefcase" class="instructions" style="display: none;">
+        SELECT YOUR FINAL BRIEFCASE
+    </div>
+
+    <div id="game-over" class="instructions" style="display: none;">
+        GAME OVER
+    </div>
+
+    <div id="briefcase-selection-modal" class="modal">
+        <div class="modal-content">
+            <h2>YOUR BRIEFCASE</h2>
+            <h5>You selected briefcase <span id="selected-briefcase-number"></span></h5>
+            <div class="modal-actions">
+                <button class="btn" id="close-briefcase-selection-modal">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="briefcase-contents-modal" class="modal">
+        <div class="modal-content">
+            <h2>BRIEFCASE CONTENTS</h2>
+            <h5 id="briefcase-contents">${{ briefcase_contents|intcomma }}</h5>
+            <div class="modal-actions">
+                <button class="btn" id="close-briefcase-modal">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="banker-offer-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>THE BANKER OFFERS <span id="banker-offer-amount"></span></h2>
+            <h5>Accept the offer?</h5>
+            <div>
+                <button id="accept-offer" class="btn">Accept</button>
+                <button id="continue-playing" class="btn">Continue Playing</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="banker-offer-modal-counteroffer" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>THE BANKER OFFERS <span id="banker-offer-amount-counteroffer"></span></h2>
+            <h5>Accept the offer?</h5>
+            <div class="modal-actions">
+                <button id="accept-offer-counteroffer" class="btn">Accept</button>
+                <button id="make-counteroffer" class="btn">Make Counteroffer</button>
+                <button id="continue-playing-counteroffer" class="btn">Continue Playing</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="counteroffer-container" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>COUNTEROFFER</h2>
+            <div class="button-container">
+                <label>Enter your counteroffer:</label><br>
+                <!-- Type should be text to accommodate dollar-value formatting -->
+                <input type="text" id="user-counteroffer" name="username" required><br><br>
+                <button id="submit-counteroffer" class="btn">Submit Counteroffer</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="counteroffer-accepted" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>COUNTEROFFER ACCEPTED</h2>
+            <h5>The banker has accepted your counteroffer</h5>
+            <div>
+                <button id="close-counteroffer-accepted" class="btn">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="counteroffer-rejected" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>COUNTEROFFER REJECTED</h2>
+            <h5>The banker has rejected your counteroffer</h5>
+            <div>
+                <button id="close-counteroffer-rejected" class="btn">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="name-input-section" class="modal" style="display: none;">
+        <div class="modal-content">
+            <form method="POST" action="/record_score/" onsubmit="window.location.reload();">
+                <h2>YOUR WINNINGS: <span id="winnings-final"></span></h2>
+                <h5>Your briefcase contained <span id="user-briefcase-contents"></span></h5>
+                <div>
+                    {% csrf_token %}
+                    <label for="username">Enter your name:</label>
+                    <input type="text" id="username" name="username" maxlength="32" required><br>
+                    <input type="hidden" id="winnings" name="winnings">
+                    <button type="submit" class="btn">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="briefcase-container">
+
+        <div id="row-1">
+            <button class="briefcase" id="briefcase-21" data-value="{{ game.briefcase_21 }}">
+                21
+            </button>
+            <button class="briefcase" id="briefcase-22" data-value="{{ game.briefcase_22 }}">
+                22
+            </button>
+            <button class="briefcase" id="briefcase-23" data-value="{{ game.briefcase_23 }}">
+                23
+            </button>
+            <button class="briefcase" id="briefcase-24" data-value="{{ game.briefcase_24 }}">
+                24
+            </button>
+            <button class="briefcase" id="briefcase-25" data-value="{{ game.briefcase_25 }}">
+                25
+            </button>
+            <button class="briefcase" id="briefcase-26" data-value="{{ game.briefcase_26 }}">
+                26
+            </button>
+        </div>
+
+        <div id="row-2">
+            <button class="briefcase" id="briefcase-14" data-value="{{ game.briefcase_14 }}">
+                14
+            </button>
+            <button class="briefcase" id="briefcase-15" data-value="{{ game.briefcase_15 }}">
+                15
+            </button>
+            <button class="briefcase" id="briefcase-16" data-value="{{ game.briefcase_16 }}">
+                16
+            </button>
+            <button class="briefcase" id="briefcase-17" data-value="{{ game.briefcase_17 }}">
+                17
+            </button>
+            <button class="briefcase" id="briefcase-18" data-value="{{ game.briefcase_18 }}">
+                18
+            </button>
+            <button class="briefcase" id="briefcase-19" data-value="{{ game.briefcase_19 }}">
+                19
+            </button>
+            <button class="briefcase" id="briefcase-20" data-value="{{ game.briefcase_20 }}">
+                20
+            </button>
+        </div>
+
+        <div id="row-3">
+            <button class="briefcase" id="briefcase-7" data-value="{{ game.briefcase_7 }}">
+                7
+            </button>
+            <button class="briefcase" id="briefcase-8" data-value="{{ game.briefcase_8 }}">
+                8
+            </button>
+            <button class="briefcase" id="briefcase-9" data-value="{{ game.briefcase_9 }}">
+                9
+            </button>
+            <button class="briefcase" id="briefcase-10" data-value="{{ game.briefcase_10 }}">
+                10
+            </button>
+            <button class="briefcase" id="briefcase-11" data-value="{{ game.briefcase_11 }}">
+                11
+            </button>
+            <button class="briefcase" id="briefcase-12" data-value="{{ game.briefcase_12 }}">
+                12
+            </button>
+            <button class="briefcase" id="briefcase-13" data-value="{{ game.briefcase_13 }}">
+                13
+            </button>
+        </div>
+
+        <div id="row-4">
+            <button class="briefcase" id="briefcase-1" data-value="{{ game.briefcase_1 }}">
+                1
+            </button>
+            <button class="briefcase" id="briefcase-2" data-value="{{ game.briefcase_2 }}">
+                2
+            </button>
+            <button class="briefcase" id="briefcase-3" data-value="{{ game.briefcase_3 }}">
+                3
+            </button>
+            <button class="briefcase" id="briefcase-4" data-value="{{ game.briefcase_4 }}">
+                4
+            </button>
+            <button class="briefcase" id="briefcase-5" data-value="{{ game.briefcase_5 }}">
+                5
+            </button>
+            <button class="briefcase" id="briefcase-6" data-value="{{ game.briefcase_6 }}">
+                6
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+    // Audio control
+    document.addEventListener('DOMContentLoaded', () => {
+        // Automatically disable music
+        localStorage.setItem("musicEnabled", "false");
+        updateMusicIcon();
+
+        document.getElementById("toggle-music-main-menu").addEventListener("click", function() {
+            if (localStorage.getItem("musicEnabled") === "false") {
+                localStorage.setItem("musicEnabled", "true");
+                document.getElementById("music-main-menu").play();
+            } else {
+                localStorage.setItem("musicEnabled", "false");
+                document.getElementById("music-main-menu").pause();
+            }
+            updateMusicIcon();
+        });
+
+        document.getElementById("toggle-music-play").addEventListener("click", function() {
+            if (localStorage.getItem("musicEnabled") === "false") {
+                localStorage.setItem("musicEnabled", "true");
+                document.getElementById("music-play").play();
+            } else {
+                localStorage.setItem("musicEnabled", "false");
+                document.getElementById("music-play").pause();
+            }
+            updateMusicIcon();
+        });
+
+        document.getElementById("play-button").addEventListener("click", function() {
+            if (localStorage.getItem("musicEnabled") === "true") {
+                document.getElementById("music-main-menu").pause();
+                document.getElementById("music-main-menu").currentTime = 0;
+                document.getElementById("music-play").play();
+            }
+        });
+
+        // Function to update the music icon based on the musicEnabled state
+        function updateMusicIcon() {
+            const musicStatus = localStorage.getItem("musicEnabled");
+            const speakerImageMainMenu = document.getElementById("toggle-music-main-menu");
+            const speakerImagePlay = document.getElementById("toggle-music-play");
+
+            if (musicStatus === "false") {
+                // Tint effect
+                speakerImageMainMenu.style.filter = "brightness(2) saturate(100%)";
+                speakerImagePlay.style.filter = "brightness(2) saturate(100%)";
+
+            } else {
+                speakerImageMainMenu.style.filter = "brightness(7) saturate(100%) sepia(0%)";
+                speakerImagePlay.style.filter = "brightness(7) saturate(100%) sepia(0%)";
+            }
+        }
+    });
+
+</script>
+
+{% endblock %}
