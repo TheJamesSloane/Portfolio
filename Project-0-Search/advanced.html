@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <title>Search</title>
+        <link href="static/styles.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <img id="advanced_image" src="static/Google.png">
+        <a class="links" href="index.html">Google Search</a>
+
+        <div>
+            <p id="advanced_heading">Advanced Search</p>
+            <div id=advanced_line></div>
+        </div>
+
+        <!-- Table holding the different sections in the advanced search function -->
+        <form action="https://www.google.com/search" method="GET">
+            <table id="advanced_table">
+                <tr>
+                    <td id="advanced_table_heading">Find pages with...</td>
+                    <td class="advanced_search_area"></td>
+                    <td id="advanced_right_heading" class="advanced_text">To do this in the search box.</td>
+                </tr>
+                <tr>
+                    <td class="advanced_text">all these words:</td>
+                    <td><input class="advanced_search_area" type="text" name="as_q" autofocus></td>
+                    <td class="advanced_text">Type the important words: <p class="advanced_text_right">tri-colour rat terrier</p></td>
+                </tr>
+                <tr>
+                    <td class="advanced_text">this exact word or phrase:</td>
+                    <td><input class="advanced_search_area" type="text" name="as_epq"></td>
+                    <td class="advanced_text">Put exact words in quotes: <p class="advanced_text_right">"rat terrier"</p></td>
+                </tr>
+                <tr>
+                    <td class="advanced_text">any of these words:</td>
+                    <td><input class="advanced_search_area" type="text" name="as_oq"></td>
+                    <td class="advanced_text">Type OR between all the words you want: <p class="advanced_text_right">miniature OR standard</p></td>
+                </tr>
+                <tr>
+                    <td class="advanced_text">none of these words:</td>
+                    <td><input class="advanced_search_area" type="text" name="as_eq" autocomplete="off"></td>
+                    <td class="advanced_text">Put a minus sign just before words that you don't want: <p class="advanced_text_right">-rodent, -"Jack Russell"</p></td>
+                </tr>
+            </table>
+            <br>
+            <input class="advanced_button" type="submit" value="Advanced Search">
+        </form>
+    </body>
+
+</html>
